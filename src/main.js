@@ -12,6 +12,7 @@ const run = (callback) => {
   const tlsCryptKey = core.getInput("tls_crypt_key");
   const tlsCryptV2Key = core.getInput("tls_crypt_v2_key");
   const echoConfig = core.getInput("echo_config");
+  const openvpn3 = core.getInput("use_openvpn3");
 
   if (!fs.existsSync(configFile)) {
     throw new Error(`config file '${configFile}' not found`);
@@ -53,6 +54,13 @@ const run = (callback) => {
     core.info(fs.readFileSync(configFile, "utf8"));
     core.info("=========== end configuration ===========");
   }
+  
+  let openvpnExec = "openvpn";
+  if (openvpn3) {
+    // eslint-disable-next-line camelcase
+    openvpnExec = "openvpn3"
+  }
+  
   // 2. Run openvpn
 
   // prepare log file
@@ -60,7 +68,7 @@ const run = (callback) => {
   const tail = new Tail("openvpn.log");
 
   try {
-    exec(`sudo openvpn --config ${configFile} --daemon --log openvpn.log --writepid openvpn.pid`);
+    exec(`sudo ${openvpnExec} --config ${configFile} --daemon --log openvpn.log --writepid openvpn.pid`);
   } catch (error) {
     core.error(fs.readFileSync("openvpn.log", "utf8"));
     tail.unwatch();
