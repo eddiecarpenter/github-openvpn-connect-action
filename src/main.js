@@ -55,12 +55,6 @@ const run = (callback) => {
     core.info("=========== end configuration ===========");
   }
   
-  let openvpnExec = "openvpn --daemon";
-  if (openvpn3) {
-    // eslint-disable-next-line camelcase
-    openvpnExec = "openvpn3 session-start"
-  }
-  
   // 2. Run openvpn
 
   // prepare log file
@@ -68,7 +62,12 @@ const run = (callback) => {
   const tail = new Tail("openvpn.log");
 
   try {
-    exec(`sudo ${openvpnExec} --config ${configFile} --log openvpn.log --writepid openvpn.pid`);
+    if (openvpn3) {
+      exec(`sudo openvpn3 session-start --config ${configFile}`);  
+    }
+    else {
+      exec(`sudo openvpn --config ${configFile} --daemon --log openvpn.log --writepid openvpn.pid`);
+    }
   } catch (error) {
     core.error(fs.readFileSync("openvpn.log", "utf8"));
     tail.unwatch();
