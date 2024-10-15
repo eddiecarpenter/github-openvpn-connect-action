@@ -58,7 +58,7 @@ const run = (callback) => {
   let openvpnExec = "openvpn";
   if (openvpn3) {
     // eslint-disable-next-line camelcase
-    openvpnExec = "openvpn3"
+    openvpnExec = "openvpn3 session-start"
   }
   
   // 2. Run openvpn
